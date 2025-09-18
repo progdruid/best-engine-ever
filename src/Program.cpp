@@ -7,6 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
+#include "Mouse.h"
+
 #include <cstdio>
 #include <cassert>
 
@@ -23,6 +25,8 @@ auto Program::run() -> int {
     glfwSetErrorCallback(errorCallback);
     if (!glfwInit()) return -1;
 
+    DirectX::Mouse mouse;
+    
     // No client API: Direct3D will render
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     window = glfwCreateWindow(800, 600, "GLFW + D3D11 Triangle", nullptr, nullptr);
