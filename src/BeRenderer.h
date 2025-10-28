@@ -6,11 +6,18 @@
 #include <gtc/quaternion.hpp>
 #include <vector>
 #include <wrl/client.h>
+#include <memory>
 
 #include "BeModel.h"
 #include "BeBuffers.h"
 
 class BeShader;
+class BeRenderGraph;
+class BeGeometryPass;
+class BeDirectionalLightPass;
+class BePointLightPass;
+class BeCompositionPass;
+
 using Microsoft::WRL::ComPtr;
 
 
@@ -52,38 +59,18 @@ private:
     ComPtr<IDXGIFactory2> _factory;
     ComPtr<IDXGISwapChain1> _swapchain;
 
-    // targets
+    // backbuffer
     ComPtr<ID3D11RenderTargetView> _backbufferTarget;
-    ComPtr<ID3D11ShaderResourceView> _depthStencilResource;
-    ComPtr<ID3D11DepthStencilView> _depthStencilView;
-    ComPtr<ID3D11DepthStencilState> _depthStencilState;
-    ID3D11RenderTargetView* _gbufferTargets[3];
-    ID3D11ShaderResourceView* _gbufferResources[3];
-    ComPtr<ID3D11RenderTargetView> _lightingTarget;
-    ComPtr<ID3D11BlendState> _lightingBlendState;
-    ComPtr<ID3D11ShaderResourceView> _lightingResource;
-    
-    // constant buffers
-    ComPtr<ID3D11Buffer> _uniformBuffer;
-    ComPtr<ID3D11Buffer> _materialBuffer;
-    ComPtr<ID3D11Buffer> _directionalLightBuffer;
-    ComPtr<ID3D11Buffer> _pointLightBuffer;
-    //ComPtr<ID3D11Buffer> _spotLightBuffer;
-    ComPtr<ID3D11SamplerState> _pointSampler;
-    
-    // shaders
-    std::unique_ptr<BeShader> _directionalLightShader;
-    std::unique_ptr<BeShader> _pointLightShader;
-    std::unique_ptr<BeShader> _fullscreenShader = nullptr;
 
-    // geometry pass
-    ComPtr<ID3D11Buffer> _sharedVertexBuffer;
-    ComPtr<ID3D11Buffer> _sharedIndexBuffer;
-    
     // scene objects
     std::vector<ObjectEntry> _objects;
 
-    BeTexture _whiteFallbackTexture {glm::vec4(1.0f)};
+    // render graph system
+    std::unique_ptr<BeRenderGraph> _renderGraph;
+    BeGeometryPass* _geometryPass = nullptr;
+    BeDirectionalLightPass* _directionalLightPass = nullptr;
+    BePointLightPass* _pointLightPass = nullptr;
+    BeCompositionPass* _compositionPass = nullptr;
 
 public:
     [[nodiscard]] auto GetDevice() const -> ComPtr<ID3D11Device> { return _device; }
